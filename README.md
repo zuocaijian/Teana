@@ -11,3 +11,30 @@
 ## FFmpeg编译优化、裁剪
 ## 音效处理(fmod开源库???)
 ## 其他
+
+
+1. [ffmpeg处理pcm和mp3互转](https://blog.csdn.net/weixin_33890499/article/details/88708622)
+ 1.1 mp3转pcm
+    ```shell script
+   ffmpeg -y -i test.mp3 -acodec pcm_s16le -f s16le -ac 2 -ar 44100 44k.pcm
+   ```
+   |参数|说明|
+   |:--:|:--|
+   |-y|允许覆盖|
+   |-i test.mp3|源文件|
+   |-acodec pcm_s16le|解码器|
+   |-f s16le|强制文件格式|
+   |-ac 2|双声道|
+   |-ar 44100|采样率|
+ 1.2 pcm转mp3
+    ```shell script
+   ffmpeg -y -f s16le -ac 2 -ar 44100 -acodec pcm_s16le -i 44k.pcm new_test.mp3
+    ```
+   |参数|说明|
+   |:--:|:--:|
+   |-y|允许覆盖|
+   |-f s16le|强制文件格式|
+   |-ac 2|双声道|
+   |-ar 44100|采样率|
+   |-acodec pcm_s16le|编码器|
+   |-i 44k.pcm|源文件|
