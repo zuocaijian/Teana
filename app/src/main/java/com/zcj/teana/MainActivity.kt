@@ -9,6 +9,8 @@ import com.zcj.teana.util.FileUtils
 class MainActivity : AppCompatActivity() {
 
     private val pcmControl: Control = Control()
+    private val pcmPath =
+        "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}croatina_44.cpm";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,9 +18,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun copyFile(view: View) {
-        val filePath =
-            "${getExternalFilesDir(null)}${java.io.File.separator}croatina_44.pcm"
-        FileUtils.copyAssetsFile("croatian_44k.pcm", filePath)
+        FileUtils.copyAssetsFile("croatian_44k.pcm", pcmPath)
     }
 
     fun init(view: View) {
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun play(view: View) {
-        pcmControl.play("/sdcard/media/test.mp3")
+        pcmControl.play(pcmPath)
     }
 
     fun pause(view: View) {

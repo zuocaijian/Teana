@@ -8,6 +8,12 @@
 #include "com_zcj_teana_pcm_control.h"
 #include "log_util.h"
 #include "constant.h"
+#include "play_engine.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_init
         (JNIEnv *env, jobject jClass)
@@ -25,11 +31,13 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_play
     const char *filePath = env->GetStringUTFChars(jStr, &isCopy);
     auto len1 = strlen(suffix);
     auto len2 = strlen(filePath);
-    char *msg = (char *)malloc(sizeof(char) * (len1 + len2 + 1));
+    char *msg = (char *) malloc(sizeof(char) * (len1 + len2 + 1));
     memset(msg, 0, (len1 + len2 + 1));
     memcpy(msg, suffix, len1);
     memcpy(msg + len1, filePath, len2);
     LOGD(msg);
+
+    playInternal(filePath);
     return SUCCESS;
 }
 
@@ -53,3 +61,7 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_destroy
     LOGD("destroy is called.");
     return SUCCESS;
 }
+
+#ifdef __cplusplus
+}
+#endif

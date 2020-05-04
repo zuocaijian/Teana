@@ -4,6 +4,7 @@ add_library(
         playcore
         SHARED
         src/main/jni/playcore.cpp
+        src/main/jni/play_engin.cpp
 )
 
 find_library(
@@ -11,7 +12,13 @@ find_library(
         log
 )
 
+find_library(
+        sles-lib
+        OpenSLES
+)
+
 target_link_libraries(
         playcore
         ${log-lib}
+        ${sles-lib}
 )
