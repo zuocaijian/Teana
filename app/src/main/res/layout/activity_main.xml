@@ -73,4 +73,29 @@
         android:textColor="@android:color/black"
         android:textSize="16sp" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="#acacac" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#54a45c"
+        android:gravity="center"
+        android:onClick="getFFmpegVersion"
+        android:padding="10dp"
+        android:text="获取FFmpeg版本"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_msg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:background="#cfcfcf"
+        android:padding="10dp"
+        android:textSize="14sp" />
+
 </LinearLayout>

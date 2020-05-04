@@ -133,7 +133,7 @@ void playInternal(const char *pcmFile)
     SLPlayItf playerInterface = NULL;
     SLAndroidSimpleBufferQueueItf pcmQueue = NULL;
     const SLInterfaceID ids[] = {SL_IID_BUFFERQUEUE}; //接口id
-    const SLboolean req[] = {SL_BOOLEAN_TRUE}; //接口开放
+    const SLboolean req[] = {SL_BOOLEAN_TRUE}; //标记每个需要包含的Interface在AudioPlayerObject不支持的情况下,是不是需要在创建AudioPlayerObject时返回失败
     re = (*eng)->CreateAudioPlayer(eng, &player, &ds, &audioSink,
                                    sizeof(ids) / sizeof(SLInterfaceID), ids, req);
     if (re != SL_RESULT_SUCCESS)

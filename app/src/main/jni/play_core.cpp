@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
-#include "com_zcj_teana_pcm_control.h"
+#include "com_zcj_teana_opensles_playcore.h"
 #include "log_util.h"
 #include "constant.h"
 #include "play_engine.h"
@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_init
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_init
         (JNIEnv *env, jobject jClass)
 {
     LOGD("init is called.");
@@ -23,7 +23,7 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_init
 }
 
 
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_play
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_play
         (JNIEnv *env, jobject jClass, jstring jStr)
 {
     const char *suffix = "play is called, prepare to play ";
@@ -41,21 +41,21 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_play
     return SUCCESS;
 }
 
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_pause
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_pause
         (JNIEnv *env, jobject jClass)
 {
     LOGD("pause is called.");
     return SUCCESS;
 }
 
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_stop
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_stop
         (JNIEnv *env, jobject jClass)
 {
     LOGD("stop is called.");
     return SUCCESS;
 }
 
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_destroy
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_destroy
         (JNIEnv *env, jobject jClass)
 {
     LOGD("destroy is called.");

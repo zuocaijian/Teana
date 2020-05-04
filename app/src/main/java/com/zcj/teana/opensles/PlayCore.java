@@ -1,6 +1,6 @@
-package com.zcj.teana.pcm;
+package com.zcj.teana.opensles;
 
-public class Control {
+public class PlayCore {
     static {
         System.loadLibrary("playcore");
     }

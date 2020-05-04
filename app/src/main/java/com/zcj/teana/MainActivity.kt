@@ -2,13 +2,20 @@ package com.zcj.teana
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import com.zcj.teana.pcm.Control
+import com.zcj.teana.ffmpeg.FFmpegCore
+import com.zcj.teana.opensles.PlayCore
 import com.zcj.teana.util.FileUtils
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
 
-    private val pcmControl: Control = Control()
+    private val playCore: PlayCore =
+        PlayCore()
+    private val ffmpegCore: FFmpegCore =
+        FFmpegCore()
     private val pcmPath =
         "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}croatina_44.cpm";
 
@@ -22,22 +29,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun init(view: View) {
-        pcmControl.init()
+        playCore.init()
     }
 
     fun play(view: View) {
-        pcmControl.play(pcmPath)
+        playCore.play(pcmPath)
     }
 
     fun pause(view: View) {
-        pcmControl.pause()
+        playCore.pause()
     }
 
     fun stop(view: View) {
-        pcmControl.stop()
+        playCore.stop()
     }
 
     fun release(view: View) {
-        pcmControl.destroy()
+        playCore.destroy()
+    }
+
+    fun getFFmpegVersion(view: View) {
+        tv_msg.text =
+            "FFmpeg version = ${ffmpegCore.fFmpegVersion}\nlicence = ${ffmpegCore.fFmpegLicense}\nconfiguration = ${ffmpegCore.fFmpegConfiguration}"
     }
 }

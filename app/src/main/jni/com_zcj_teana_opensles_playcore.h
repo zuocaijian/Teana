@@ -12,7 +12,7 @@ extern "C" {
  * Method:    init
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_init
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_init
         (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_init
  * Method:    play
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_play
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_play
         (JNIEnv *, jobject, jstring);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_play
  * Method:    pause
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_pause
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_pause
         (JNIEnv *, jobject);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_pause
  * Method:    stop
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_stop
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_stop
         (JNIEnv *, jobject);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_stop
  * Method:    destroy
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_zcj_teana_pcm_Control_destroy
+JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_destroy
         (JNIEnv *, jobject);
 
 #ifdef __cplusplus

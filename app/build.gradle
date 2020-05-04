@@ -21,7 +21,7 @@ android {
                 cppFlags "-std=c++11", "-frtti", "-fexceptions"
                 //也可以使用arguments向变量传递参数，两种形式："-D变量名=参数" "-D变量名=参数1 参数2"
                 arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_CPP_FEATURES=rtti exceptions", "-DANDROID_DISABLE_FORMAT_STRING_CHECKS=FLASE"
-                abiFilters "armeabi-v7a", "arm64-v8a"
+                abiFilters "arm64-v8a"
             }
         }
     }
