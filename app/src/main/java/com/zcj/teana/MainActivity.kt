@@ -1,13 +1,16 @@
 package com.zcj.teana
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PowerManager
 import android.util.Log
 import android.view.View
 import com.zcj.teana.ffmpeg.FFmpegCore
 import com.zcj.teana.opensles.PlayCore
 import com.zcj.teana.util.FileUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.concurrent.thread
 import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
@@ -17,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private val ffmpegCore: FFmpegCore =
         FFmpegCore()
     private val pcmPath =
-        "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}croatina_44.cpm";
+        "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}croatina_44.pcm";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +36,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun play(view: View) {
+        val pm: PowerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        val wl: PowerManager.WakeLock =
+            pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "wakeLockTag")
+        wl.acquire()
         playCore.play(pcmPath)
+        //wl.release()
+        /*Thread(Runnable {
+            playCore.play(pcmPath)
+        }).start()*/
     }
 
     fun pause(view: View) {

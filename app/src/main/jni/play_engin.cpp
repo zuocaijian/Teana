@@ -14,9 +14,12 @@
 #include <cstdio>
 #include "log_util.h"
 #include "play_engine.h"
+#include "ffmpeg_engine.h"
 
 static SLObjectItf engineSL = NULL;
 static const char *filePath = NULL;
+size_t buffersize = 0;
+void *buffer = NULL;
 
 #ifdef __cplusplus
 extern "C"
@@ -54,7 +57,7 @@ SLEngineItf createSL()
 
 void pcmCallback(SLAndroidSimpleBufferQueueItf caller, void *pContext)
 {
-    LOGI("pcmCallback...");
+    /*LOGI("pcmCallback...");
     static FILE *fp = NULL;
     static char *buf = NULL;
     if (!buf)
@@ -77,12 +80,24 @@ void pcmCallback(SLAndroidSimpleBufferQueueItf caller, void *pContext)
         {
             (*caller)->Enqueue(caller, buf, len);
         }
+    }*/
+
+    buffersize = 0;
+    getPCM(&buffer, &buffersize);
+    if (buffer != NULL && buffersize != 0)
+    {
+        (*caller)->Enqueue(caller, buffer, buffersize);
     }
 }
 
 void playInternal(const char *pcmFile)
 {
     filePath = pcmFile;
+
+    unsigned rate;
+    unsigned channels;
+    createFFmpeg(&rate, &channels);
+    LOGI("FFmpeg obtain rate = %d, channels = %d\n", rate, channels);
 
     //2. 创建设置混音器(多路声音混合，音频输出设备)
 
@@ -118,8 +133,8 @@ void playInternal(const char *pcmFile)
     //音频格式配置
     SLDataFormat_PCM pcm = {
             SL_DATAFORMAT_PCM,
-            2, //通道数
-            SL_SAMPLINGRATE_44_1, //采样率
+            channels, //通道数
+            rate * 1000, //采样率
             SL_PCMSAMPLEFORMAT_FIXED_16, //bitsPerSample
             SL_PCMSAMPLEFORMAT_FIXED_16, //containerSize
             SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT, //声道
@@ -133,7 +148,8 @@ void playInternal(const char *pcmFile)
     SLPlayItf playerInterface = NULL;
     SLAndroidSimpleBufferQueueItf pcmQueue = NULL;
     const SLInterfaceID ids[] = {SL_IID_BUFFERQUEUE}; //接口id
-    const SLboolean req[] = {SL_BOOLEAN_TRUE}; //标记每个需要包含的Interface在AudioPlayerObject不支持的情况下,是不是需要在创建AudioPlayerObject时返回失败
+    const SLboolean req[] = {
+            SL_BOOLEAN_TRUE}; //标记每个需要包含的Interface在AudioPlayerObject不支持的情况下,是不是需要在创建AudioPlayerObject时返回失败
     re = (*eng)->CreateAudioPlayer(eng, &player, &ds, &audioSink,
                                    sizeof(ids) / sizeof(SLInterfaceID), ids, req);
     if (re != SL_RESULT_SUCCESS)
@@ -175,7 +191,8 @@ void playInternal(const char *pcmFile)
     //设置状态 播放
     (*playerInterface)->SetPlayState(playerInterface, SL_PLAYSTATE_PLAYING);
     //启动队列回调
-    (*pcmQueue)->Enqueue(pcmQueue, "", 1);
+    //(*pcmQueue)->Enqueue(pcmQueue, "", 1);
+    pcmCallback(pcmQueue, NULL);
 }
 
 #ifdef __cplusplus
