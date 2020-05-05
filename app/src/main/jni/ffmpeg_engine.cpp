@@ -16,6 +16,8 @@ uint8_t *out_buffer;
 int out_channel_nb;
 int audio_stream_idx = -1;
 
+//FFMPEG4.0 音频解码解封装 https://blog.51cto.com/4095821/2402550
+
 int createFFmpeg(unsigned *rate, unsigned *channel)
 {
     av_register_all();
@@ -63,10 +65,19 @@ int createFFmpeg(unsigned *rate, unsigned *channel)
 
     pCodecCtx = avcodec_alloc_context3(pCodex);
 
+    //把stream信息中的参数拷贝到解码Context中
+    avcodec_parameters_to_context(pCodecCtx, pCodecParam);
+
     if (avcodec_open2(pCodecCtx, pCodex, NULL) < 0)
     {
         LOGE("could not open codec.");
         return -4;
+    }
+    else
+    {
+        LOGI("codec bitRate = %d, sampleRate = %d, channels = %d, fmt = %d",
+             pCodecCtx->bit_rate, pCodecCtx->sample_rate, pCodecCtx->channels,
+             pCodecCtx->sample_fmt);
     }
     packet = (AVPacket *) av_malloc(sizeof(AVPacket));
     frame = av_frame_alloc();
@@ -126,6 +137,9 @@ int getPCM(void **pcm, size_t *pcm_size)
                     return 0;
                 }
 
+                LOGI("frame sample_rate = %d, channels = %d, size = %d, duration = %d",
+                     frame->sample_rate, frame->channels, frame->pkt_size, frame->pkt_duration);
+
                 swr_convert(swrContext, &out_buffer, 44100 * 2, (const uint8_t **) frame->data,
                             frame->nb_samples);
                 //缓冲区大小
@@ -133,6 +147,7 @@ int getPCM(void **pcm, size_t *pcm_size)
                                                       AV_SAMPLE_FMT_S16, 1);
                 *pcm = out_buffer;
                 *pcm_size = size;
+                LOGI("decode frame, size = %ld", pcm_size);
                 return 0;
             }
 
