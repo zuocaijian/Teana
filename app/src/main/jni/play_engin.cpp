@@ -26,6 +26,9 @@ extern "C"
 {
 #endif
 
+extern JavaVM *jvm;
+JNIEnv *env;
+
 //1. 创建并设置SL引擎
 SLEngineItf createSL()
 {
@@ -55,6 +58,11 @@ SLEngineItf createSL()
     return en;
 }
 
+void checkThread()
+{
+    jvm->GetEnv((void **)&env, JNI_VERSION_1_6);
+}
+
 void pcmCallback(SLAndroidSimpleBufferQueueItf caller, void *pContext)
 {
     /*LOGI("pcmCallback...");
@@ -81,6 +89,8 @@ void pcmCallback(SLAndroidSimpleBufferQueueItf caller, void *pContext)
             (*caller)->Enqueue(caller, buf, len);
         }
     }*/
+
+    checkThread();
 
     buffersize = 0;
     getPCM(&buffer, &buffersize);

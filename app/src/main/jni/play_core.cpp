@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <unistd.h>
+#include <pthread.h>
 #include "com_zcj_teana_opensles_playcore.h"
 #include "log_util.h"
 #include "constant.h"
@@ -14,6 +16,8 @@
 extern "C"
 {
 #endif
+
+JavaVM *jvm;
 
 JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_init
         (JNIEnv *env, jobject jClass)
@@ -60,6 +64,12 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_destroy
 {
     LOGD("destroy is called.");
     return SUCCESS;
+}
+
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
+{
+    jvm = vm;
+    return JNI_VERSION_1_4;
 }
 
 #ifdef __cplusplus

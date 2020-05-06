@@ -43,5 +43,11 @@
     创建并设置SL引擎 -> 创建并设置混音器 -> 创建并设置播放器 <- 设置回调并讲数据压入队列
  2.2 播放队列
     设置播放状态后，只要往播放队列压入数据，就会播放。从队列取出一个buf播放完毕后就会清理buf，队列非满，就会回调，压进pcm数据
+ 2.3 倍速播放
+    如果原始音频采样率是44100，即一秒钟采样了44100次，播放的时候也是1秒钟播放44100个sample，那就是1.0的正常速度；如果播放的时候1秒钟播放44100 * 2个sample，那么就是2.0倍速了。
+    可以通过设置音频格式配置SLDataFormat_PCM的采样率来控制1秒钟播放的sample数。
+    不过这个方式设置倍速，会改变音频，听起来不舒服。推荐使用soundtouch库。
 3. JNI调用FFmpeg
  3.1 FFmpeg的源码全部用的是C语言。如果在我们的项目中使用了C++，在.cpp文件中，**需要注意使用extern "C"" 把FFmpeg的头文件包裹起来**
+4. Android NDK
+ 4.1 Android上不存在单独的libpthread或librt库，集成在libc中，无需显示链接。https://developer.android.google.cn/ndk/guides/stable_apis#c_library

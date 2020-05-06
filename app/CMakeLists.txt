@@ -106,8 +106,14 @@ add_library(
         src/main/jni/ffmpeg_core.cpp
 )
 
+find_library(
+        log-lib
+        log
+)
+
 target_link_libraries(
         ffmpegcore
+        ${log-lib}
         avcodec
         avformat
         avutil
@@ -126,11 +132,6 @@ add_library(
         src/main/jni/play_core.cpp
         src/main/jni/play_engin.cpp
         src/main/jni/ffmpeg_engine.cpp
-)
-
-find_library(
-        log-lib
-        log
 )
 
 find_library(
