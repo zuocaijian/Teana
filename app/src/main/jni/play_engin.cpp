@@ -12,6 +12,7 @@
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 #include <cstdio>
+#include <pthread.h>
 #include "log_util.h"
 #include "play_engine.h"
 #include "ffmpeg_engine.h"
@@ -60,7 +61,16 @@ SLEngineItf createSL()
 
 void checkThread()
 {
-    jvm->GetEnv((void **)&env, JNI_VERSION_1_6);
+    jvm->GetEnv((void **) &env, JNI_VERSION_1_6);
+}
+
+void *asyncCreateFFmpeg(void *arg)
+{
+    unsigned rate;
+    unsigned channels;
+    createFFmpeg(&rate, &channels);
+    LOGI("FFmpeg obtain rate = %d, channels = %d\n", rate, channels);
+    return 0;
 }
 
 void pcmCallback(SLAndroidSimpleBufferQueueItf caller, void *pContext)
@@ -106,6 +116,12 @@ void playInternal(const char *pcmFile)
 
     unsigned rate;
     unsigned channels;
+
+    /*pthread_t pt;
+    pthread_create(&pt, NULL, asyncCreateFFmpeg, NULL);
+    void *ret = NULL;
+    pthread_join(pt, &ret);*/
+
     createFFmpeg(&rate, &channels);
     LOGI("FFmpeg obtain rate = %d, channels = %d\n", rate, channels);
 

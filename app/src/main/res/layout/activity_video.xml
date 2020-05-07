@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#c45a54"
+        android:gravity="center"
+        android:onClick="init"
+        android:padding="10dp"
+        android:text="初始化"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#c5a544"
+        android:gravity="center"
+        android:onClick="tmpFun"
+        android:padding="10dp"
+        android:text="其他测试"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <SurfaceView
+        android:id="@+id/sf"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/tv_msg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:background="#cfcfcf"
+        android:padding="10dp"
+        android:textSize="14sp" />
+
+</LinearLayout>

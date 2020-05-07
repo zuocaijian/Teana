@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -86,6 +85,17 @@
         android:onClick="getFFmpegVersion"
         android:padding="10dp"
         android:text="获取FFmpeg版本"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#445a5c"
+        android:gravity="center"
+        android:onClick="videoTest"
+        android:padding="10dp"
+        android:text="OpenGL ES视频播放实验"
         android:textColor="@android:color/black"
         android:textSize="16sp" />
 

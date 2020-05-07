@@ -12,11 +12,12 @@ extern "C"
 {
 #endif
 
+#include "include/libavformat/avformat.h"
 #include "include/libavcodec/avcodec.h"
 
 void *test(void *arg)
 {
-    LOGI("参数 = %s", (char *)arg);
+    LOGI("参数 = %s", (char *) arg);
     return (void *) 0;
 }
 
@@ -43,6 +44,17 @@ JNIEXPORT jstring JNICALL Java_com_zcj_teana_ffmpeg_FFmpegCore_getFFmpegConfigur
 JNIEXPORT jstring JNICALL Java_com_zcj_teana_ffmpeg_FFmpegCore_getFFmpegLicense
         (JNIEnv *env, jobject jClass)
 {
+    // 获取所有协议
+    LOGI("=== input protocols start===");
+    void *opaque = NULL;
+    const char *protocol = avio_enum_protocols(&opaque, 0);
+    while (protocol != NULL)
+    {
+        LOGI("%s", protocol);
+        protocol = avio_enum_protocols(&opaque, 0);
+    }
+    LOGI("=== input protocols end===");
+
     const char *license = avcodec_license();
     return env->NewStringUTF(license);
 }

@@ -152,3 +152,20 @@ target_link_libraries(
         postproc
         swscale
 )
+
+
+# ------------- OpenGL ES -------------
+add_library(
+        videocore
+        SHARED
+        src/main/jni/video/video_core.cpp
+        src/main/jni/video/video_engine.cpp
+)
+
+target_link_libraries(
+        videocore
+        ${log-lib}
+        # EGL相关库
+        GLESv2
+        EGL
+)
