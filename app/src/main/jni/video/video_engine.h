@@ -8,7 +8,8 @@
 #include <egl/egl.h>
 #include <GLES2/gl2.h>
 
-void initEGL(JNIEnv *env, jobject surface);
-void initGLRender(int width, int height, GLint (&texts)[3]);
+void initGLRender(int width, int height, GLuint *texts);
+
+void playVideo(JNIEnv *env, const char *url, jobject surface);
 
 #endif //TEANA_VIDEO_ENGINE_H

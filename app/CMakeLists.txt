@@ -168,4 +168,13 @@ target_link_libraries(
         # EGL相关库
         GLESv2
         EGL
+        android
+        avcodec
+        avformat
+        avutil
+        swresample
+        avdevice
+        avfilter
+        postproc
+        swscale
 )

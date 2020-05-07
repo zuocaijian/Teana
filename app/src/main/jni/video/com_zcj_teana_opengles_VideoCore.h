@@ -13,15 +13,15 @@ extern "C" {
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_zcj_teana_opengles_VideoCore_init
-  (JNIEnv *, jobject);
+        (JNIEnv *, jobject);
 
 /*
  * Class:     com_zcj_teana_opengles_VideoCore
  * Method:    play
- * Signature: ()V
+ * Signature: (Ljava/lang/String;Landroid/view/Surface;)V
  */
 JNIEXPORT void JNICALL Java_com_zcj_teana_opengles_VideoCore_play
-  (JNIEnv *, jobject);
+        (JNIEnv *, jobject, jstring, jobject);
 
 #ifdef __cplusplus
 }

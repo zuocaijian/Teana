@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
         "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}croatina_44.pcm";
     private val mp3Path =
         "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}test.mp3";
+    private val mp4Path =
+        "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}big_buck_bunny.mp4";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     fun copyFile(view: View) {
         FileUtils.copyAssetsFile("croatian_44k.pcm", pcmPath)
         FileUtils.copyAssetsFile("test.mp3", mp3Path)
+        FileUtils.copyAssetsFile("big_buck_bunny.mp4", mp4Path)
     }
 
     fun init(view: View) {

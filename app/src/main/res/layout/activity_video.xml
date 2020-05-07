@@ -27,7 +27,7 @@
         android:textSize="16sp" />
 
     <SurfaceView
-        android:id="@+id/sf"
+        android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"

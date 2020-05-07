@@ -21,10 +21,60 @@ extern "C"
 }
 #endif
 
-void initEGL(JNIEnv *env, jobject surface)
+#define GET_STR(x) #x
+
+static const char *VSStr = GET_STR(
+        attribute
+        vec4 aPosition;//顶点坐标，在外部获取传递进来
+        attribute
+        vec2 aTexCoord;//材质(纹理)顶点坐标
+        varying
+        vec2 vTexCoord;//输出的材质(纹理)坐标，给片元着色器用
+
+        void main()
+        {
+            //纹理坐标转换，以左上角为原点的纹理坐标转换成以左下角为原点的纹理坐标
+            //比如以左上角为原点的(0,0)对应以左下角为原点的纹理坐标的(0,1)
+            vTexCoord = vec2(aTexCoord.x, 1.0 - aTexCoord.y);
+            gl_Position = aPosition;
+        }
+);
+
+static const char *FSStr = GET_STR(
+        precision
+        mediump float;//指定精度
+        varying
+        vec2 vTexCoord;//顶点着色器传递的坐标，相同名字OpenGL会自动关联
+        uniform
+        sampler2D yTexture;//输入的材质(不透明灰度，单像素)
+        uniform
+        sampler2D uTexture;
+        uniform
+        sampler2D vTexture;
+
+        void main()
+        {
+            vec3 yuv;
+            vec3 rgb;
+            yuv.r = texture2D(yTexture, vTexCoord).r;// y分量
+            //因为UV的默认值是127，所以这里我们要减去0.5(OpenGL ES中会把内存中0~255的整数数值换算为0.0~1.0的浮点数值)
+            yuv.g = texture2D(uTexture, vTexCoord).r - 0.5;//u分量
+            yuv.b = texture2D(vTexture, vTexCoord).r - 0.5;//v分量
+            //yuv转换成rgb，两种方法，一种是RGB按照特定换算公式逐个计算转换
+            //另外一种是使用矩阵转换
+            rgb = mat3(1.0, 1.0, 1.0,
+                       0.0, -0.39465, 2.03211,
+                       1.13983, -0.58060, 0.0) * yuv;
+            //输出像素颜色
+            gl_FragColor = vec4(rgb, 1.0);
+        }
+);
+
+void initEGL(JNIEnv *env, jobject &surface, EGLDisplay &display, EGLSurface &winSurface)
 {
     //1. EGLDisplay，对系统物理屏幕的封装
-    EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    //EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (display == EGL_NO_DISPLAY)
     {
         LOGE("eglGetDisplay failed!");
@@ -55,7 +105,8 @@ void initEGL(JNIEnv *env, jobject surface)
     //3.1 获取原始窗口，surface是外部的SurfaceView传递进来的
     ANativeWindow *win = ANativeWindow_fromSurface(env, surface);
     //3.2 创建EGLSurface
-    EGLSurface winSurface = eglCreateWindowSurface(display, config, win, 0);
+    //EGLSurface winSurface = eglCreateWindowSurface(display, config, win, 0);
+    winSurface = eglCreateWindowSurface(display, config, win, 0);
     if (winSurface == EGL_NO_SURFACE)
     {
         LOGE("eglCreateWindowSurface failed!");
@@ -108,19 +159,19 @@ GLuint initShader(const char *code, GLenum type)
     return sh;
 }
 
-GLint initProgram(GLuint &program)
+void initProgram(GLuint &program)
 {
     //1. 顶点和偏远着色器初始化
     //TODO 读取shader程序
-    GLuint vsh = initShader(nullptr, GL_VERTEX_SHADER);
-    GLuint fsh = initShader(nullptr, GL_FRAGMENT_SHADER);
+    GLuint vsh = initShader(VSStr, GL_VERTEX_SHADER);
+    GLuint fsh = initShader(FSStr, GL_FRAGMENT_SHADER);
     //2. 创建渲染程序
     //GLuint program = glCreateProgram();
     program = glCreateProgram();
     if (program == GL_FALSE)
     {
         LOGE("glCreateProgram failed!");
-        return 0;
+        return;
     }
     //3. 将着色器添加到渲染程序
     glAttachShader(program, vsh);
@@ -131,14 +182,14 @@ GLint initProgram(GLuint &program)
     glGetProgramiv(program, GL_LINK_STATUS, &status);
     if (status == GL_FALSE)
     {
-        LOGE("glLinkProgram failed~");
-        return 0;
+        LOGE("glLinkProgram failed!");
+        return;
     }
     glUseProgram(program);
-    LOGE("glLinkProgram success!");
+    LOGI("glLinkProgram success!, program = %d", program);
 }
 
-void initGLRender(int width, int height, GLint (&texts)[3])
+void initGLRender(int width, int height, GLuint *texts)
 {
     GLuint program = 0;
     initProgram(program);
@@ -225,39 +276,71 @@ void initGLRender(int width, int height, GLint (&texts)[3])
     );
 }
 
-void renderVideo(int width, int height, AVFrame *frame)
+void renderVideo(int width, int height, AVFrame *frame, GLuint *texts, EGLDisplay &display,
+                 EGLSurface &winSurface)
 {
+    LOGI("准备渲染帧...");
+
     //纹理的修改和显示
-    unsigned char *buf[3] = {0};
-    buf[0] = new unsigned char[width * height];
-    buf[1] = new unsigned char[width * height / 4];
-    buf[2] = new unsigned char[width * height / 4];
+    static unsigned char *buf[3] = {0};
+    if (buf[0] == NULL)
+    {
+        buf[0] = new unsigned char[width * height];
+    }
+    if (buf[1] == NULL)
+    {
+        buf[1] = new unsigned char[width * height / 4];
+    }
+    if (buf[2] == NULL)
+    {
+        buf[2] = new unsigned char[width * height / 4];
+    }
 
     //数据Y
     //buf[0] = frame->data[0];
     memcpy(buf[0], frame->data[0], width * height);
     //数据U
-    memcpy(buf[1], frame->data[1], width * height / 4);
+    memcpy(buf[1], frame->data[1], (width * height) >> 2);
     //数据V
-    memcpy(buf[2], frame->data[2], width * height / 4);
+    memcpy(buf[2], frame->data[2], (width * height) >> 2);
 
     //激活第1层纹理，绑定到创建的OpenGL纹理
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, );
+    glBindTexture(GL_TEXTURE_2D, texts[0]);
     //替换纹理内容
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, buf[0]);
 
+    //激活第2层纹理，绑定到创建的OpenGL纹理
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, texts[1]);
+    //替换纹理内容
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width >> 1, height >> 1, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+                    buf[1]);
 
+    //激活第2层纹理，绑定到创建的OpenGL纹理
+    glActiveTexture(GL_TEXTURE0 + 2);
+    glBindTexture(GL_TEXTURE_2D, texts[2]);
+    //替换纹理内容
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width >> 1, height >> 1, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+                    buf[2]);
+
+    //三维绘制
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    //窗口显示
+    eglSwapBuffers(display, winSurface);
 }
 
-void playVideo(JNIEnv *env, const char *videoPath, jobject surface)
+void playVideo(JNIEnv *env, const char *url, jobject surface)
 {
+    //av_register_all();
+
     AVFormatContext *fmtCtx;
     fmtCtx = avformat_alloc_context();
-    int re = avformat_open_input(&fmtCtx, videoPath, nullptr, nullptr);
+    avformat_network_init();
+    int re = avformat_open_input(&fmtCtx, url, nullptr, nullptr);
     if (re != 0)
     {
-        LOGE("打开视频文件失败：%s", av_err2str(re));
+        LOGE("打开视频文件(%s)失败：%s", url, av_err2str(re));
         return;
     }
 
@@ -276,6 +359,8 @@ void playVideo(JNIEnv *env, const char *videoPath, jobject surface)
         LOGE("获取视频流索引失败");
         return;
     }
+    LOGI("获取视频流索引，index= %d", vIdx);
+
     //解码器参数
     AVCodecParameters *codecParam;
     //解码器上下文
@@ -283,7 +368,8 @@ void playVideo(JNIEnv *env, const char *videoPath, jobject surface)
     //声明一个解码器
     const AVCodec *codec;
 
-    codecParam = fmtCtx->streams[vIdx]->codecpar;
+    AVStream *vStream = fmtCtx->streams[vIdx];
+    codecParam = vStream->codecpar;
     //通过id查找解码器
     codec = avcodec_find_decoder(codecParam->codec_id);
     if (!codec)
@@ -291,6 +377,7 @@ void playVideo(JNIEnv *env, const char *videoPath, jobject surface)
         LOGE("查找解码器失败");
         return;
     }
+    LOGI("获取视频解码器，id= %d", codec->id);
 
     //用解码器参数实例化编解码器上下文，并打开编解码器
     codecCtx = avcodec_alloc_context3(codec);
@@ -316,19 +403,21 @@ void playVideo(JNIEnv *env, const char *videoPath, jobject surface)
     LOGI("视频的宽 = %d, 高 = %d", width, height);
 
     //定义视频流、解封装后的数据包、解码后的数据帧
-    AVStream *vStream = fmtCtx->streams[vIdx];
+
     AVPacket *pkt;
     AVFrame *frame;
     pkt = av_packet_alloc();
     frame = av_frame_alloc();
 
-    initEGL(env, surface);
+    EGLDisplay display;
+    EGLSurface winSurface;
+    initEGL(env, surface, display, winSurface);
     GLuint texts[3] = {0};
     initGLRender(width, height, texts);
 
     while (av_read_frame(fmtCtx, pkt) >= 0)
     {
-        //只节码视频流
+        //只解码视频流
         if (pkt->stream_index == vIdx)
         {
             //发送数据包到解码器
@@ -339,9 +428,10 @@ void playVideo(JNIEnv *env, const char *videoPath, jobject surface)
             while (re >= 0)
             {
                 re = avcodec_receive_frame(codecCtx, frame);
-                if (re == AVERROR(EAGAIN) || re == AVERROR_EOF)
+                if (re == AVERROR(EAGAIN))
                 {
-                    return;
+                    LOGE("解码失败：%s", av_err2str(re));
+                    break;
                 }
                 else if (re < 0)
                 {
@@ -350,7 +440,7 @@ void playVideo(JNIEnv *env, const char *videoPath, jobject surface)
                 }
 
                 //解码得到YUV数据，交给OpenGL ES显示
-                renderVideo(width, height, frame);
+                renderVideo(width, height, frame, texts, display, winSurface);
             }
         }
     }
