@@ -3,6 +3,9 @@ package com.zcj.teana.ui
 import android.content.Context
 import android.os.Bundle
 import android.os.PowerManager
+import android.util.Log
+import android.view.Surface
+import android.view.SurfaceHolder
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.zcj.teana.App
@@ -24,9 +27,29 @@ class VideoActivity : AppCompatActivity() {
 
     private val videoCore = VideoCore()
 
+    private var surface: Surface? = null;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
+
+        sv.holder.addCallback(object : SurfaceHolder.Callback {
+            override fun surfaceChanged(
+                holder: SurfaceHolder?,
+                format: Int,
+                width: Int,
+                height: Int
+            ) {
+            }
+
+            override fun surfaceDestroyed(holder: SurfaceHolder?) {
+            }
+
+            override fun surfaceCreated(holder: SurfaceHolder?) {
+                surface = holder!!.surface
+            }
+        })
+
     }
 
     fun init(view: View) {
@@ -45,6 +68,6 @@ class VideoActivity : AppCompatActivity() {
             "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}oceans.mp4"
         val mp3Path =
             "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}test.mp3";
-        videoCore.play(mp4Path, sv.holder.surface)
+        videoCore.play(mp4Path, surface)
     }
 }
