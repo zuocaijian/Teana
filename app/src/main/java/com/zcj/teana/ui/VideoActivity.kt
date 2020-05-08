@@ -1,6 +1,8 @@
 package com.zcj.teana.ui
 
+import android.content.Context
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.zcj.teana.App
@@ -29,8 +31,17 @@ class VideoActivity : AppCompatActivity() {
     }
 
     fun tmpFun(view: View) {
+        val pm: PowerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        val wl: PowerManager.WakeLock =
+            pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Teana:WakeLockTag")
+        wl.acquire()
+
         val mp4Path =
-            "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}big_buck_bunny.mp4";
+            "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}big_buck_bunny.mp4"
+        val mp4OceansPath =
+            "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}oceans.mp4"
+        val mp3Path =
+            "${App.sContext.getExternalFilesDir(null)}${java.io.File.separator}test.mp3";
         videoCore.play(mp4Path, sv.holder.surface)
     }
 }

@@ -279,8 +279,6 @@ void initGLRender(int width, int height, GLuint *texts)
 void renderVideo(int width, int height, AVFrame *frame, GLuint *texts, EGLDisplay &display,
                  EGLSurface &winSurface)
 {
-    LOGI("准备渲染帧...");
-
     //纹理的修改和显示
     static unsigned char *buf[3] = {0};
     if (buf[0] == NULL)
@@ -343,6 +341,7 @@ void playVideo(JNIEnv *env, const char *url, jobject surface)
         LOGE("打开视频文件(%s)失败：%s", url, av_err2str(re));
         return;
     }
+    LOGI("打开文件：%s", url);
 
     //探测流索引
     re = avformat_find_stream_info(fmtCtx, nullptr);
@@ -439,6 +438,7 @@ void playVideo(JNIEnv *env, const char *url, jobject surface)
                     return;
                 }
 
+                LOGI("解码成功，准备渲染帧");
                 //解码得到YUV数据，交给OpenGL ES显示
                 renderVideo(width, height, frame, texts, display, winSurface);
             }
