@@ -14,6 +14,9 @@ import kotlinx.android.synthetic.main.activity_video.*
  * 1. Android使用OpenGL渲染ffmpeg解码的YUV视频数据
  * https://blog.csdn.net/u012944685/article/details/104586591
  *
+ * 2. 基于FFmpeg解码和OpenGL ES渲染的Android视频播放
+ * https://blog.csdn.net/ericbar/article/details/80506390
+ *
  * 2. MP4视频测试URL地址，亲测有效
  * https://blog.csdn.net/weixin_41010198/article/details/88055078?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2
  */
