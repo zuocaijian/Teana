@@ -20,7 +20,7 @@ extern "C"
 JavaVM *jvm;
 
 JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_init
-        (JNIEnv *env, jobject jClass)
+        (JNIEnv *env, jobject jObj)
 {
     LOGD("init is called.");
     return SUCCESS;
@@ -28,7 +28,7 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_init
 
 
 JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_play
-        (JNIEnv *env, jobject jClass, jstring jStr)
+        (JNIEnv *env, jobject jObj, jstring jStr)
 {
     const char *suffix = "play is called, prepare to play ";
     jboolean isCopy;
@@ -46,21 +46,21 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_play
 }
 
 JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_pause
-        (JNIEnv *env, jobject jClass)
+        (JNIEnv *env, jobject jObj)
 {
     LOGD("pause is called.");
     return SUCCESS;
 }
 
 JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_stop
-        (JNIEnv *env, jobject jClass)
+        (JNIEnv *env, jobject jObj)
 {
     LOGD("stop is called.");
     return SUCCESS;
 }
 
 JNIEXPORT jint JNICALL Java_com_zcj_teana_opensles_PlayCore_destroy
-        (JNIEnv *env, jobject jClass)
+        (JNIEnv *env, jobject jObj)
 {
     LOGD("destroy is called.");
     return SUCCESS;

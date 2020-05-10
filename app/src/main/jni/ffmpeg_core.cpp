@@ -22,7 +22,7 @@ void *test(void *arg)
 }
 
 JNIEXPORT jint JNICALL Java_com_zcj_teana_ffmpeg_FFmpegCore_getFFmpegVersion
-        (JNIEnv *env, jobject jClass)
+        (JNIEnv *env, jobject jObj)
 {
     pthread_t pt;
     pthread_create(&pt, NULL, test, (void *) "123");
@@ -35,14 +35,14 @@ JNIEXPORT jint JNICALL Java_com_zcj_teana_ffmpeg_FFmpegCore_getFFmpegVersion
 
 
 JNIEXPORT jstring JNICALL Java_com_zcj_teana_ffmpeg_FFmpegCore_getFFmpegConfiguration
-        (JNIEnv *env, jobject jClass)
+        (JNIEnv *env, jobject jObj)
 {
     const char *config = avcodec_configuration();
     return env->NewStringUTF(config);
 }
 
 JNIEXPORT jstring JNICALL Java_com_zcj_teana_ffmpeg_FFmpegCore_getFFmpegLicense
-        (JNIEnv *env, jobject jClass)
+        (JNIEnv *env, jobject jObj)
 {
     // 获取所有协议
     LOGI("=== input protocols start===");
