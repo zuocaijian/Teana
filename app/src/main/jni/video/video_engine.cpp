@@ -95,6 +95,9 @@ void initEGL(JNIEnv *env, jobject &surface, EGLDisplay &display, EGLSurface &win
             EGL_BLUE_SIZE, 8,
             EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_NONE
     };
+    //参数 attrib_list 指定了选择配置时需要参照的属性。参数 configs 将返回一个按照 attrib_list 排序的平台有效的所有 EGL framebuffer 配置列表
+    //所谓config其实就是指FrameBuffer的参数。这里的选择，意为：我们可以指定参数，但同时也需要平台(display)支持才行
+    //config_size参数指定了可以返回到configs的总配置个数，而num_config返回了时机匹配的配置总数
     if (EGL_TRUE != eglChooseConfig(display, configSpec, &config, 1, &configNum))
     {
         LOGE("eglChooseConfig failed!");
@@ -123,6 +126,9 @@ void initEGL(JNIEnv *env, jobject &surface, EGLDisplay &display, EGLSurface &win
         LOGE("eglCreateContext failed!");
         return;
     }
+    //将display和EGLSurface与context绑定起来，EGLSurface作为GL渲染的目的地，display作为EGLSurface的前端显示
+    //其实就是EGLSurface管理FrameBuffer，GL和display分别作为生产者和消费者
+    //同时，context会与当前线程绑定，通过tls(线程局部存储，thread local storage，类似Java的ThreadLocal)实现
     if (EGL_TRUE != eglMakeCurrent(display, winSurface, winSurface, context))
     {
         LOGE("eglMakeCurrent failed!");
@@ -143,7 +149,7 @@ GLuint initShader(const char *code, GLenum type)
     glShaderSource(sh,
                    1, //shader数量
                    &code, //Shader代码
-                   0); //代码长度
+                   nullptr); //代码长度
     // 编译Shader
     glCompileShader(sh);
 
@@ -201,7 +207,7 @@ void initGLRender(int width, int height, GLuint *texts)
             1.0f, 1.0f, 0.0f,
             -1.0f, 1.0f, 0.0f
     };
-    GLuint apos = (GLuint) glGetAttribLocation(program, "aTexCoord");
+    GLuint apos = (GLuint) glGetAttribLocation(program, "aPosition");
     glEnableVertexAttribArray(apos);
     //传递顶点
     glVertexAttribPointer(apos, 3, GL_FLOAT, GL_FALSE, 12, vers);
@@ -280,18 +286,18 @@ void renderVideo(int width, int height, AVFrame *frame, GLuint *texts, EGLDispla
                  EGLSurface &winSurface)
 {
     //纹理的修改和显示
-    static unsigned char *buf[3] = {0};
-    if (buf[0] == NULL)
+    static unsigned char *buf[3] = {nullptr, nullptr, nullptr};
+    if (buf[0] == nullptr)
     {
         buf[0] = new unsigned char[width * height];
     }
-    if (buf[1] == NULL)
+    if (buf[1] == nullptr)
     {
-        buf[1] = new unsigned char[width * height / 4];
+        buf[1] = new unsigned char[(width * height) >> 2];
     }
-    if (buf[2] == NULL)
+    if (buf[2] == nullptr)
     {
-        buf[2] = new unsigned char[width * height / 4];
+        buf[2] = new unsigned char[(width * height) >> 4];
     }
 
     //数据Y
