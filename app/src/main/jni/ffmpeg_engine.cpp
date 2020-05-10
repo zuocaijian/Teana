@@ -24,7 +24,7 @@ int createFFmpeg(unsigned *rate, unsigned *channel)
     //char *input = "http://audio04.dmhmusic.com/71_53_T10046885865_128_4_1_0_sdk-cpm/cn/0206/M00/7B/02/ChR461urPneAN8rbADnHLEU29-Y184.mp3?xcode=4eda71c9bc5e3dcc649133c195093eb068cb3ee";
     char *input = "/storage/emulated/0/Android/data/com.zcj.teana/files/test.mp3";
     //char *input = "http://source.boomplaymusic.com/group1/M0B/8F/A0/rBEeMV1NhqKAO0A7AC5rB48CoCE344.mp3";
-    //char *input = "http://m10.music.126.net/20180809173001/070d716213a3cf7cb910b5b88b638eb8/ymusic/687c/a444/e9e3/66452e1efb0e3f108d6b899010c13ba8.mp3";
+    //char *input = "http://mpge.5nd.com/2015/2015-11-26/69708/1.mp3";
     pFormatCtx = avformat_alloc_context();
     int error;
     char buff[] = "";
