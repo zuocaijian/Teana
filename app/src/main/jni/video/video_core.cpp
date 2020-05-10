@@ -23,12 +23,12 @@ JNIEXPORT void JNICALL Java_com_zcj_teana_opengles_VideoCore_init
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_zcj_teana_opengles_VideoCore_play
-        (JNIEnv *env, jobject jObj, jstring jStr, jobject jObj)
+        (JNIEnv *env, jobject jObj, jstring jStr, jobject jSurface)
 {
     LOGI("call videoCore play");
     jboolean isCopy;
     const char *url = env->GetStringUTFChars(jStr, &isCopy);
-    playVideo(env, url, jObj);
+    playVideo(env, url, jSurface);
     env->ReleaseStringUTFChars(jStr, url);
 }
 
